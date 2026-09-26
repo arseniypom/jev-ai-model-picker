@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jev AI Model Picker
 
-## Getting Started
+Paste a prompt, get the cheapest model that will handle it well.
 
-First, run the development server:
+**Live demo:** https://choose-ai-eosin.vercel.app
+
+## How it works
+
+1. [Jev](https://openrouter.ai/docs/guides/community/jev) (`typesafe/jev-1.13` on OpenRouter) doesn't generate text. It answers typed questions with probabilities. The app asks it to rate the prompt: overall difficulty, reasoning depth, expertise, cost of a mistake, output size, task type.
+2. `lib/select.ts` turns that probability distribution into the minimum [Artificial Analysis](https://artificialanalysis.ai) Intelligence Index the task needs.
+3. The app picks the cheapest model (by average cost per task, not per token) that clears that bar with ≥ 80% probability, and suggests the best option from the other provider.
+
+A single Jev call costs a fraction of a cent and takes under a second.
+
+## Run locally
+
+You'll need Node.js 20+ and an [OpenRouter API key](https://openrouter.ai/keys).
 
 ```bash
+git clone https://github.com/arseniypom/jev-ai-model-picker.git
+cd jev-ai-model-picker
+cp .env.example .env   # then set OPENROUTER_KEY
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tweaking
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Models, indices, prices:** `lib/models.ts`
+- **Selection logic** (index per difficulty level, factor weights, 80% threshold): `lib/select.ts`
+- **Questions sent to Jev:** `lib/jev.ts`
+- **UI text (English / Russian):** `lib/i18n.ts`
 
-## Learn More
+Built with Next.js, Tailwind CSS and shadcn/ui.
 
-To learn more about Next.js, take a look at the following resources:
+## License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[MIT](LICENSE)
